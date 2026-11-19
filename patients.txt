@@ -1,0 +1,5 @@
+101|Hunain|21|illness
+102|Ali|23|Fever
+103|Adil|29|Flu
+105|Akbar|24|Dengue
+108|Faheem|20|Flu
