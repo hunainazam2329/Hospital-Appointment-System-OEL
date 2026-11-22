@@ -1,6 +1,11 @@
 101|Ali|12|ded
 102|Akbar|34|fly
 103|asd|12|flu
-109|asan|34|flu
-121|asaaan|23|flu
+106|harman|55|fli
 108|adil|24|fver
+109|asan|34|flu
+113|hunain|45|fever
+121|asaaan|23|flu
+145|Aqib|22|flu
+123|Hassan|45|ill
+1234|Atif|12|ill
