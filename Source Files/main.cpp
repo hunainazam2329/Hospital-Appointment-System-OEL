@@ -1,8 +1,11 @@
+
 #include <ctime>
 #include <cstdio>
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <cctype>
+
 using namespace std;
 
 #include "PatientLinkedList.h"
@@ -62,7 +65,86 @@ string readText(string message)
     }
 }
 
-// Validate actual calendar date
+// Validate patient name
+// Only letters and spaces are allowed
+bool isValidName(string name)
+{
+    bool hasLetter = false;
+
+    for (int i = 0; i < name.length(); i++)
+    {
+        unsigned char ch = name[i];
+
+        if (isalpha(ch))
+        {
+            hasLetter = true;
+        }
+        else if (ch != ' ')
+        {
+            return false;
+        }
+    }
+
+    return hasLetter;
+}
+
+// Validate disease
+// Letters, numbers and spaces are allowed
+// At least one letter is required
+bool isValidDisease(string disease)
+{
+    bool hasLetter = false;
+
+    for (int i = 0; i < disease.length(); i++)
+    {
+        unsigned char ch = disease[i];
+
+        if (isalpha(ch))
+        {
+            hasLetter = true;
+        }
+        else if (!isdigit(ch) && ch != ' ')
+        {
+            return false;
+        }
+    }
+
+    return hasLetter;
+}
+
+// Read valid patient name
+string readName()
+{
+    string name;
+
+    while (true)
+    {
+        name = readText("Enter Patient Name: ");
+
+        if (isValidName(name))
+            return name;
+
+        cout << "Invalid name! Only letters and spaces are allowed.\n";
+    }
+}
+
+// Read valid disease
+string readDisease()
+{
+    string disease;
+
+    while (true)
+    {
+        disease = readText("Enter Disease: ");
+
+        if (isValidDisease(disease))
+            return disease;
+
+        cout << "Invalid disease! Enter at least one letter. "
+             << "Numbers are allowed with letters.\n";
+    }
+}
+
 // Validate actual calendar date and reject past dates
 bool isValidDate(string date)
 {
@@ -102,7 +184,7 @@ bool isValidDate(string date)
     if (day < 1 || day > days[month - 1])
         return false;
 
-    // Get today's date from the computer
+    // Get today's date from computer
     time_t now = time(nullptr);
     tm* currentTime = localtime(&now);
 
@@ -120,7 +202,6 @@ bool isValidDate(string date)
     return date >= string(today);
 }
 
-// Read date from user
 // Read appointment date from user
 string readDate()
 {
@@ -137,15 +218,19 @@ string readDate()
         cout << "Invalid date! Enter a valid date today or in the future.\n";
     }
 }
+
 // Register patient
 void registerPatient(PatientList& patients)
 {
     cout << "\n========== PATIENT REGISTRATION ==========\n";
 
     int id = readIntInRange("Enter Patient ID: ", 1, 999999);
-    string name = readText("Enter Patient Name: ");
+
+    string name = readName();
+
     int age = readIntInRange("Enter Age (1-120): ", 1, 120);
-    string disease = readText("Enter Disease: ");
+
+    string disease = readDisease();
 
     if (patients.addPatient(id, name, age, disease))
         FileManager::savePatients(patients);
@@ -164,9 +249,11 @@ void updatePatientRecord(PatientList& patients)
         return;
     }
 
-    string name = readText("Enter New Name: ");
+    string name = readName();
+
     int age = readIntInRange("Enter New Age (1-120): ", 1, 120);
-    string disease = readText("Enter New Disease: ");
+
+    string disease = readDisease();
 
     if (patients.updatePatient(id, name, age, disease))
         FileManager::savePatients(patients);
@@ -357,7 +444,9 @@ int main()
             break;
 
         case 12:
-            AppointmentAlgorithms::sortById(appointments);
+            cout << "\nAppointments are automatically arranged by date.\n";
+            cout << "Sorting by ID is not available because it would "
+                 << "change the date priority.\n";
             break;
 
         case 13:

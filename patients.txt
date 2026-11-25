@@ -9,3 +9,5 @@
 145|Aqib|22|flu
 123|Hassan|45|ill
 1234|Atif|12|ill
+190|ALI|23|FLU23
+191|HASSAN|34|FLU

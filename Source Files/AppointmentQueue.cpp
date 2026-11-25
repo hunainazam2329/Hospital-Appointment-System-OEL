@@ -45,48 +45,73 @@ Appointment* AppointmentQueue::findById(int appId)
     return nullptr;
 }
 
-// Add appointment at rear
+// Add appointment according to date
 bool AppointmentQueue::addAppointment(
     int appId, int patientId, string date,
     PatientList& patients, int status)
 {
+    // Check whether patient exists
     if (patients.searchById(patientId) == nullptr)
     {
         cout << "\nError: Patient does not exist!\n";
         return false;
     }
 
+    // Prevent duplicate appointment IDs
     if (findById(appId) != nullptr)
     {
         cout << "\nDuplicate Appointment ID!\n";
         return false;
     }
 
+    // Validate appointment status
     if (status < 1 || status > 3)
     {
         cout << "\nInvalid appointment status!\n";
         return false;
     }
 
+    // Create new appointment
     Appointment* newAppointment =
         new Appointment(appId, patientId, date, status);
 
-    if (front == nullptr)
+    // Case 1: Queue is empty
+    // OR new appointment has an earlier date
+    if (front == nullptr || date < front->date)
     {
+        newAppointment->next = front;
         front = newAppointment;
-        rear = newAppointment;
+
+        // If queue was empty, update rear too
+        if (rear == nullptr)
+            rear = newAppointment;
     }
     else
     {
-        rear->next = newAppointment;
-        rear = newAppointment;
+        Appointment* temp = front;
+
+        // Find correct position according to date
+        // <= maintains insertion order for same dates
+        while (temp->next != nullptr &&
+               temp->next->date <= date)
+        {
+            temp = temp->next;
+        }
+
+        // Insert appointment at correct position
+        newAppointment->next = temp->next;
+        temp->next = newAppointment;
+
+        // Update rear if inserted at the end
+        if (newAppointment->next == nullptr)
+            rear = newAppointment;
     }
 
     cout << "\nAppointment added successfully!\n";
     return true;
 }
 
-// Complete the first scheduled appointment
+// Complete the earliest scheduled appointment
 bool AppointmentQueue::completeNext()
 {
     if (front == nullptr)
@@ -97,8 +122,11 @@ bool AppointmentQueue::completeNext()
 
     Appointment* temp = front;
 
+    // Find first scheduled appointment
     while (temp != nullptr && temp->status != 1)
+    {
         temp = temp->next;
+    }
 
     if (temp == nullptr)
     {
@@ -106,10 +134,12 @@ bool AppointmentQueue::completeNext()
         return false;
     }
 
+    // Change status to completed
     temp->status = 2;
 
     cout << "\nAppointment completed successfully!\n";
     cout << "Appointment ID: " << temp->appId << endl;
+    cout << "Appointment Date: " << temp->date << endl;
 
     return true;
 }
